@@ -1,0 +1,39 @@
+<div ng-init="state = ($route.current.params.param1 == 'add') ? 'Tambah' : 'Edit'; initiate(); dataMiss = 0" class="padding">
+
+    <div class="ui grid">
+        <div class="sixteen wide column nopadding-horizontal-all">
+            <h3 class="ui dividing right aligned header">
+                <i ng-click="$location.path($route.current.params.file)" class="far fa-backspace float-left close pointer"></i>
+                <i class="{{ ::titleIcon }}"></i> {{ ::state }} {{ ::titlePage }}
+            </h3>
+        </div>
+    </div>
+
+    <div class="ui grid">
+        <div class="sixteen column">
+            <form class="ui form {{ proceedAction ? 'loading' : '' }}" name="form">
+
+                <div class="two fields">
+                    <div class="required five wide field">
+                        <label>Nama Jabatan</label>
+                        <input ng-model="input.jabatan_nama" type="text" />
+                    </div>
+                    <div class="required five wide field"></div>
+                </div>
+
+                <div ng-if="root.notice.status != '' && root.notice.status != null && root.notice.status != {}" ng-click="root.notice = ''" class="ui {{ notice.status == 'success' ? 'green' : 'red' }} message pointer">
+                    <i class="close far fa-times" style="padding-top:0.2em"></i>
+                    <div class="content">
+                        <p ng-bind-html="notice.message"></p>
+                    </div>
+                </div>
+
+                <div ng-click="action()" class="ui {{ (formValid(input) || proceedAction) ? 'red disabled' : 'green' }} submit button">
+                    <i class="far fa-save"></i>
+                    {{ (state == 'Tambah') ? state : 'Update' }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

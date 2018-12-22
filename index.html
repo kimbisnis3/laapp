@@ -1,0 +1,87 @@
+<!doctype html>
+<html ng-app="laapp" ng-right-click="$event.preventDefault()">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <base href="/la/" />
+    <!-- <link rel="icon" type="image/ico" href="assets/images/logo.png" /> -->
+    <title ng-bind="title"></title>
+
+    <link rel="stylesheet" href="assets/semantic/semantic.min.css">
+    <link rel="stylesheet" href="assets/loadingbar/loading-bar.min.css">
+    <link rel="stylesheet" href="assets/icon/css/all.min.css">
+    <link rel="stylesheet" href="assets/customcss/custom.css">
+    <link rel="stylesheet" href="assets/customcss/fontface_poppins.css">
+    <link rel="stylesheet" href="assets/animate/animate.min.css">
+    <link rel="stylesheet" href="assets/semantic-ui-calendar/calendar.min.css" />
+    <link rel="text/html" href="assets/angular-csp.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/clockpicker/dist/jquery-clockpicker.min.css"> -->
+
+    <script type="text/javascript" src="assets/lodash/lodash.js"></script>
+
+    <script type="text/javascript" src="assets/jquery/jquery-3.3.1.min.js"></script>
+
+    <script type="text/javascript" src="assets/angularjs/angular.min.js"></script>
+    <script type="text/javascript" src="assets/angularjs/angular-resource.min.js"></script>
+    <script type="text/javascript" src="assets/angularjs/angular-route.min.js"></script>
+    <script type="text/javascript" src="assets/angularjs/angular-animate.min.js"></script>
+    <script type="text/javascript" src="assets/angularjs/angular-sanitize.min.js"></script>
+
+    <script type="text/javascript" src="assets/oclazyload/ocLazyLoad.min.js"></script>
+    <script type="text/javascript" src="assets/ngstorage/ngStorage.min.js"></script>
+
+    <script type="text/javascript" src="assets/upload/ng-file-upload-shim.min.js"></script>
+    <script type="text/javascript" src="assets/upload/ng-file-upload.min.js"></script>
+
+    <script type="text/javascript" src="assets/semantic/semantic.min.js"></script>
+    <script type="text/javascript" src="assets/angular-semantic-ui/angular-semantic-ui.min.js"></script>
+
+    <script type="text/javascript" src="assets/loadingbar/loading-bar.min.js"></script>
+    <script type="text/javascript" src="assets/rjson/rjson.js"></script>
+    <script type="text/javascript" src="assets/semantic-ui-calendar/calendar.min.js"></script>
+    <script type="text/javascript" src="assets/dragdrop/angular-drag-and-drop-lists.min.js"></script>
+    <!-- <script type="text/javascript" src="assets/clockpicker/dist/jquery-clockpicker.min.js"></script> -->
+
+
+    <script>
+        var appUrl = "http://localhost/la/";
+        var apiUrl = "http://localhost/la/api/";
+        var laapp = angular.module('laapp', ['ngRoute', 'ngResource', 'ngSanitize', 'ngAnimate', 'oc.lazyLoad', 'angular-loading-bar', 'ngStorage', 'ngFileUpload', 'semantic-ui', 'dndLists']);
+    </script>
+    <script type="text/javascript" src="assets/unilib/unilib.js"></script>
+    <script type="text/javascript">
+        function launchmenu(){
+            $('.ui.sidebar')
+              .sidebar('toggle')
+            ;
+        }
+    </script>
+</head>
+
+<body ng-cloak ng-controller="body" resize>
+    <div ng-hide="typeof($localStorage.currentUser) === 'undefined'" class="ui black big launch right attached fixed button" onclick="launchmenu()">
+      <i class="sidebar icon"></i>
+    </div>
+    <div ng-if="!(typeof($localStorage.currentUser) === 'undefined')" class="ui sidebar left inverted vertical menu" style="{{ shadowing }}">
+        <div class="item">
+            <div class="ui input"><input ng-model="filterMenu" ng-change="collapsed = (filterMenu != '')" type="text" placeholder="Cari Menu ..."></div>
+        </div>
+        <a ng-click="keluar()" class="item">
+            <i class="far fa-power-off float-right"></i>&nbsp; <b>Keluar</b>
+        </a>
+    </div>
+    <div class="pusher">
+        <div class="ui maincontainer fluid">
+            <div ng-cloak ng-view ng-click="isContextMenu = false" class="route ng-cloak"></div>
+
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <sm-dimmer visible="blockedPage" settings="{'closable': false}"><div class="content"><div class="center"><h2 class="ui inverted header">Anda tidak diizinkan mengakses menu ini</h2><div ng-click="clickBack()" class="ui grey button">Kembali ke dashboard</div><sm-button ng-click="clickBack()" class="grey">Kembali ke Dashboard</sm-button></div></div></sm-dimmer>
+    <sm-modal class="small basic customConfirm" settings="{closable: false}"><div class="ui icon header"><i class="question circle icon"></i>{{ customConfirm.title }}</div><div class="content"><p style="text-align:center" ng-bind-html="customConfirm.content"></p></div><div class="actions" style="text-align:center !important"><div ng-click="customConfirm.no()" class="ui red cancel inverted button"><i class="remove icon"></i>Batal</div><div ng-click="customConfirm.yes()" class="ui green ok inverted button"><i class="checkmark icon"></i>Ok</div></div></sm-modal>
+    <sm-modal class="small basic customAlert" settings="{closable: false}"><div class="ui icon header"><i class="info circle icon"></i>{{ customAlert.title }}</div><div class="content"><p style="text-align:center" ng-bind-html="customAlert.content"></p></div><div class="actions" style="text-align:center !important"><div ng-click="customAlert.yes()" class="ui green ok inverted button"><i class="checkmark icon"></i>Ok</div></div></sm-modal>
+</body>
+
+</html>

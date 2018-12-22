@@ -1,0 +1,115 @@
+<div ng-init="getData(); getAkses(); state = 'View'" class="padding">
+    <div class="ui grid">
+        <div class="sixteen wide column nopadding-horizontal-all">
+            <h3 class="ui dividing right aligned header"><i class="{{ ::titleIcon }}"></i> {{ ::titlePage }}</h3>
+        </div>
+    </div>
+
+    <div class="ui grid">
+        <div class="four wide computer sixteen wide tablet sixteen wide mobile column">
+                <button ng-if="contextOpsi.add" ng-click="$location.path(menuOpened + '/add')" class="ui black button" type="button">
+                    <i class="far fa-plus"></i> Tambah
+                </button>
+                <button ng-if="usingExport" ng-click="exportData()" ng-disabled="list.length == 0" class="ui green button float-right" type="button">
+                    <i class="far fa-file-excel"></i> Export
+                </button>
+        </div>
+        <div class="{{ usingFilter ? 'five' : 'eight' }} wide computer sixteen wide tablet sixteen wide mobile column right aligned">
+        </div>
+        <div class="{{ usingFilter ? 'three' : 'four' }} wide computer {{ usingFilter ? 'eight' : 'sixteen' }} wide tablet sixteen wide mobile column center aligned middle aligned">
+            <label ng-if="list.length > 0" class="item"><b>{{ $localStorage[menuOpened].query.offset + 1 }}</b> - <b>{{ (count >= $localStorage[menuOpened].query.offset + ($localStorage[menuOpened].query.limit-0)) ? $localStorage[menuOpened].query.offset + ($localStorage[menuOpened].query.limit-0) : count }}</b> dari <b>{{ count | number }}</b> data</label>
+            <label ng-if="list.length == 0">0 data</label>
+        </div>
+        <!--
+        <div ng-if="usingFilter" class="four wide computer eight wide tablet sixteen wide mobile column center aligned">
+            <select ng-model="$localStorage[menuOpened].query.filter" ng-change="getData()" class="ui fluid search dropdown">
+                <option value="">Filter Cabang </option>
+            </select>
+        </div>
+        -->
+    </div>
+    <div class="ui grid">
+        <div class="ui row">
+            <table class="ui celled striped unstackable selectable table" width="100%">
+                <thead>
+                    <tr>
+                        <th width="30px">
+                            <button ng-click="activeSearch = (activeSearch) ? false : true" class="ui mini button">
+                                <i class="far fa-search"></i>
+                            </button>
+                        </th>
+                        <th ng-repeat="data in visibleFields" class="center aligned noselect">
+                            <div ng-show="activeSearch" class="ui small input">
+                                <input ng-model="$localStorage[menuOpened].query.search[((data.alias == '' || data.alias == null) ? data.field : data.alias)]" ng-enter="getData()" placeholder="{{ ::data.label }}" type="text" />
+                            </div>
+                            <div ng-click="getSort((data.alias == '' || data.alias == null ? data.field : data.alias))" ng-hide="activeSearch" class="pointer">
+                              <i ng-if="$localStorage[menuOpened].query.order == (data.alias == '' || data.alias == null ? data.field : data.alias)" class="far fa-sort-alpha-{{ ($localStorage[menuOpened].query.sort == 'ASC') ? 'down' : 'up' }}"></i> {{ ::data.label }}
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-init="isContext[$index] = false; indexRow = $index" ng-repeat="data in list" ng-right-click="contextPosition($event, data)" class="ng-cloak">
+                        <td class="center aligned">
+                            {{ (!stateDelete[data.id]) ? ($index + 1) + $localStorage[menuOpened].query.offset : '' }}
+                        </td>
+                        <td ng-style="{'display':(stateDelete[data.id] ? 'table-cell' : 'none')}" colspan="10" class="ng-cloak">
+                            <div ng-click="root.notice = ''" class="ui {{ notice.status == 'success' ? 'green' : 'red' }} message pointer">
+                                <i ng-click="root.notice = {}" class="close far fa-times" style="padding-top:0.2em"></i>
+                                <div class="content">
+                                    <p ng-bind-html="notice.message"></p>
+                                </div>
+                            </div>
+                        </td>
+                        <td ng-style="{'display':(stateDelete[data.id] ? 'none' : 'table-cell')}" ng-init="indexCol = $index; field.toView = (field.alias == '' || field.alias == null) ? field.field : field.alias ;" ng-repeat="field in visibleFields" class="ng-cloak" ng-class="{'left aligned': (typeof(field.align) === 'undefined' || field.align == 'left'), 'center aligned': (field.align == 'center'), 'right aligned': (field.align == 'right')}">
+                            {{
+                                field.type == 'text' ? data[field.toView] : ((field.type == 'number') ? (data[field.toView] | number:2) :
+                                ((field.type == 'date') ? (parse(data[field.toView]) | date: field.format) :
+                                ((field.type == 'password') ? '****' :
+                                data[field.toView]) ))
+                            }}
+                        </td>
+                    </tr>
+                    <tr ng-if="list.length == 0">
+                        <td class="center aligned" colspan="10">Tidak ada data yang ditampilkan.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="five wide computer eight wide tablet sixteen wide mobile column" ng-init="limitOptions = [{id: '10', label: '10 Baris'}, {id: '50', label: '50 Baris'}, {id: '100', label: '100 Baris'}]">
+            <sm-dropdown model="$localStorage[menuOpened].query.limit" items="limitOptions" value="item.id" label="item.label" on-change="getData" default-text="'Limit Data'" settings="{allowAdditions: true, fullTextSearch: true}" class="selection"></sm-dropdown>
+        </div>
+        <div class="seven wide computer one wide tablet sixteen wide mobile column">
+        </div>
+        <div class="four wide computer seven wide tablet sixteen wide mobile column">
+            <div class="ui action input float-right block">
+                <button ng-click="currentPage = ((currentPage-0) <= 1) ? 1 : ((currentPage-0) - 1); changeCurrentPage(); getData()" class="ui button" style="border-radius:.28571429rem 0rem 0rem .28571429rem">
+                    <i class="far fa-chevron-left"></i>
+                </button>
+                <input ng-model="currentPage" ng-model-options="{debounce:700}" ng-change="changeCurrentPage(); getData()" ng-angka type="text" placeholder="Ketik Halaman" style="border-radius:0rem; text-align:center">
+                <button ng-click="currentPage = ((currentPage-0) >= maxPage) ? maxPage : ((currentPage-0) + 1); changeCurrentPage(); getData()" class="ui button">
+                    <i class="far fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div ng-if="isContextMenu" class="context-menu" ng-style="{top: clientY, left: clientX}">
+        <div class="ui vertical menu">
+            <a ng-if="contextOpsi.edit" ng-click="$location.path(menuOpened + '/edit/' + rightClickData.id)" class="item"><i class="far fa-pencil tyellow"></i> Edit &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+            <a ng-if="contextOpsi.detail" ng-click="$location.path(menuOpened + '/det/' + rightClickData.id)" class="item"><i class="far fa-print tblue"></i> Detail &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+            <a ng-if="contextOpsi.delete" ng-click="delete(rightClickData.id, rightClickData)" class="item" sm-modal-show="'.customConfirm'"><i class="far fa-trash tred"></i> Hapus &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+            <a ng-if="contextOpsi.setpusat" ng-click="setpusat(rightClickData.id, rightClickData)" class="item" sm-modal-show="'.customConfirm'"><i class="far fa-home tgreen"></i> Jadikan Pusat &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+            <a ng-if="contextOpsi.aktif" ng-click="setaktif(rightClickData.id, rightClickData)" class="item" sm-modal-show="'.customConfirm'"><i class="far fa-check tgreen"></i> {{ rightClickData.aktifn }} &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+
+            <a ng-if="contextOpsi.deln" ng-click="$location.path(menuOpened + '/deln/' + rightClickData.id)" class="item"><i class="far fa-trash tred"></i> Hapus &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+
+            <a ng-if="contextOpsi.revaluasi" ng-click="$location.path(menuOpened + '/revaluasi/' + rightClickData.id)" class="item"><i class="far fa-check tgreen"></i> Revaluasi &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+            <a ng-if="contextOpsi.revaluasi" ng-click="$location.path(menuOpened + '/disposisi/' + rightClickData.id)" class="item"><i class="far fa-check tblue"></i> Disposisi &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+
+            <a ng-if="contextOpsi.bayar" ng-click="$location.path(menuOpened + '/bayar/' + rightClickData.id)" class="item"><i class="far fa-pencil tyellow"></i> Bayar &nbsp; "<b>{{ rightClickData.label }}</b>"</a>
+
+        </div>
+    </div>
+</div>
